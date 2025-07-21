@@ -1,17 +1,32 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: Create S3 Bucket & SQS Queue
+Description: Create Unique S3 Bucket and SQS Queue for Utkarsh Project
 
-Parameters: 
-  S3BucketName:
-    Description: Please enter the S3 Bucket Name
+Parameters:
+  UniqueSuffix:
     Type: String
+    Description: "Provide a unique suffix like your initials or timestamp (e.g., upk20250716)"
+    Default: upk20250716
 
 Resources:
-    S3Bucket:
-      Type: 'AWS::S3::Bucket'
-      Properties:
-          BucketName: !Ref S3BucketName
-    MyQueue: 
-      Type: 'AWS::SQS::Queue'
-      Properties: 
-          QueueName: testsimplilearnq12
+
+  MyS3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub "utkarsh-s3-bucket-${UniqueSuffix}"
+      VersioningConfiguration:
+        Status: Enabled
+
+  MySQSQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: !Sub "utkarsh-sqs-queue-${UniqueSuffix}"
+      VisibilityTimeout: 30
+
+Outputs:
+  S3BucketName:
+    Description: "S3 Bucket Name"
+    Value: !Ref MyS3Bucket
+
+  SQSQueueURL:
+    Description: "URL of SQS Queue"
+    Value: !Ref MySQSQueue
